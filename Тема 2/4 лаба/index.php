@@ -2,13 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Solve the equation</title>
+    <title>Calculator</title>
 
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
             background: #f4f6f8;
+            font-family: Arial, sans-serif;
         }
 
         header {
@@ -16,27 +16,70 @@
             color: white;
             text-align: center;
             padding: 25px;
+            font-size: 32px;
+            font-weight: bold;
         }
 
-        main {
-            max-width: 700px;
+        .calculator {
+            width: 620px;
             margin: 50px auto;
-            background: white;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+            background: #2b2b2b;
+            padding: 18px;
+            border-radius: 20px;
         }
 
-        h2 {
-            text-align: center;
+        input[type=text] {
+            width: 100%;
+            height: 75px;
+            font-size: 36px;
+            margin-bottom: 18px;
+            text-align: right;
+            padding-right: 15px;
+            box-sizing: border-box;
+            border-radius: 12px;
+            border: none;
+            background: white;
+            color: black;
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            height: 68px;
+            font-size: 26px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background: #e5e5e5;
+            color: black;
+            font-weight: bold;
+        }
+
+        .op {
+            background: #666;
+            color: white;
+        }
+
+        .equal {
+            background: #8b0000;
+            color: white;
+        }
+
+        .clear {
+            background: #444;
+            color: white;
         }
 
         .result {
-            margin-top: 30px;
-            font-size: 22px;
-            background: #f1f1f1;
-            padding: 20px;
-            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 24px;
+            text-align: center;
+            color: white;
         }
 
         footer {
@@ -51,44 +94,132 @@
 <body>
 
 <header>
-    <h1>Домашняя работа: Solve the equation</h1>
+    Домашняя работа: Calculator
 </header>
 
-<main>
+<div class="calculator">
 
-    <h2>Решение уравнения</h2>
+    <form method="POST">
 
-    <?php
-        $a = 5;
-        $b = 20;
-        $operator = "*";
+        <input type="text" id="display" name="expression"
+        value="<?php echo isset($_POST['expression']) ? htmlspecialchars($_POST['expression']) : ''; ?>">
 
-        if ($operator == "*") {
-            $x = $b / $a;
-        }
-    ?>
+        <div class="buttons">
+
+            <button type="button" class="op" onclick="add('sqrt(')">√</button>
+            <button type="button" class="op" onclick="add('ln(')">ln</button>
+            <button type="button" class="op" onclick="add('log(')">log</button>
+            <button type="button" class="op" onclick="add('!')">!</button>
+            <button type="button" class="op" onclick="add('pi')">π</button>
+            <button type="button" class="op" onclick="add('e')">e</button>
+
+            <button type="button" onclick="add('7')">7</button>
+            <button type="button" onclick="add('8')">8</button>
+            <button type="button" onclick="add('9')">9</button>
+            <button type="button" class="op" onclick="add('(')">(</button>
+            <button type="button" class="op" onclick="add(')')">)</button>
+            <button type="button" class="op" onclick="add('^')">xʸ</button>
+
+            <button type="button" onclick="add('4')">4</button>
+            <button type="button" onclick="add('5')">5</button>
+            <button type="button" onclick="add('6')">6</button>
+            <button type="button" class="op" onclick="add('*')">*</button>
+            <button type="button" class="op" onclick="add('/')">/</button>
+            <button type="button" class="op" onclick="add('abs(')">|x|</button>
+
+            <button type="button" onclick="add('1')">1</button>
+            <button type="button" onclick="add('2')">2</button>
+            <button type="button" onclick="add('3')">3</button>
+            <button type="button" class="op" onclick="add('+')">+</button>
+            <button type="button" class="op" onclick="add('-')">-</button>
+            <button type="button" class="op" onclick="add('^2')">x²</button>
+
+            <button type="button" onclick="add('0')">0</button>
+            <button type="button" onclick="add('.')">.</button>
+            <button type="submit" class="equal">=</button>
+            <button type="button" class="clear" onclick="clearDisplay()">C</button>
+            <button type="button" class="op" onclick="add('^2')">x²</button>
+            <button type="button" class="op" onclick="add('^3')">x³</button>
+
+        </div>
+    </form>
 
     <div class="result">
-        <p>Уравнение: <b>4 * X = 36</b></p>
 
-        <p>Оператор: <b><?php echo $operator; ?></b></p>
+        <?php
 
-        <p>Неизвестная переменная: <b>X</b></p>
+        function factorial($number)
+        {
+            if ($number < 0) {
+                return null;
+            }
 
-        <p>Решение:</p>
+            $result = 1;
 
-        <p><b>X = 36 / 4</b></p>
+            for ($i = 1; $i <= $number; $i++) {
+                $result *= $i;
+            }
 
-        <p>Ответ:</p>
+            return $result;
+        }
 
-        <p><b>X = <?php echo $x; ?></b></p>
+        if (isset($_POST['expression'])) {
+
+            $expression = $_POST['expression'];
+
+            if (preg_match('/^[0-9+\-*\/(). ^a-z!]+$/', $expression)) {
+
+                try {
+                    $expression = str_replace('pi', pi(), $expression);
+                    $expression = str_replace('e', exp(1), $expression);
+
+                    $expression = preg_replace('/sqrt\(([^()]+)\)/', 'sqrt($1)', $expression);
+                    $expression = preg_replace('/ln\(([^()]+)\)/', 'log($1)', $expression);
+                    $expression = preg_replace('/log\(([^()]+)\)/', 'log10($1)', $expression);
+                    $expression = preg_replace('/abs\(([^()]+)\)/', 'abs($1)', $expression);
+
+                    while (preg_match('/(\d+)!/', $expression, $matches)) {
+                        $factorialValue = factorial((int)$matches[1]);
+                        $expression = str_replace($matches[0], $factorialValue, $expression);
+                    }
+
+                    while (preg_match('/(\d+(?:\.\d+)?)\^(\d+(?:\.\d+)?)/', $expression, $matches)) {
+                        $powerValue = pow($matches[1], $matches[2]);
+                        $expression = str_replace($matches[0], $powerValue, $expression);
+                    }
+
+                    eval('$result = ' . $expression . ';');
+
+                    echo "Результат: " . $result;
+
+                } catch (Throwable $e) {
+                    echo "Ошибка вычисления";
+                }
+
+            } else {
+                echo "Некорректное выражение";
+            }
+        }
+
+        ?>
+
     </div>
 
-</main>
+</div>
 
 <footer>
     Задание для самостоятельной работы
 </footer>
+
+<script>
+function add(value) {
+    document.getElementById('display').value += value;
+}
+
+function clearDisplay() {
+    document.getElementById('display').value = '';
+}
+</script>
 
 </body>
 </html>
